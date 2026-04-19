@@ -1,17 +1,100 @@
 ---
+import Layout from "../layouts/Layout.astro";
 
+const name = "Neel Raval";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title={`${name} — Coming Soon`}>
+  <main>
+    <section class="hero">
+      <p class="tag">Portfolio</p>
+      <h1>
+        Something great is <span class="accent">on the way</span>.
+      </h1>
+      <p class="sub">
+        Hi, I'm {name} — a software developer crafting a new home on the
+        web. Check back soon.
+      </p>
+
+      <a class="cta" href="mailto:hello@example.com">Get in touch</a>
+
+      <footer>
+        © {new Date().getFullYear()} {name}
+      </footer>
+    </section>
+  </main>
+
+  <style>
+    main {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      background:
+        radial-gradient(
+          1000px 600px at 20% 10%,
+          rgba(124, 92, 255, 0.15),
+          transparent 60%
+        ),
+        radial-gradient(
+          800px 500px at 80% 90%,
+          rgba(124, 92, 255, 0.1),
+          transparent 60%
+        );
+    }
+
+    .hero {
+      max-width: 720px;
+      text-align: center;
+    }
+
+    .tag {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 6vw, 4rem);
+      line-height: 1.1;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+
+    .accent {
+      color: var(--accent);
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .cta {
+      display: inline-block;
+      padding: 0.85rem 1.5rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    footer {
+      margin-top: 4rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</Layout>
