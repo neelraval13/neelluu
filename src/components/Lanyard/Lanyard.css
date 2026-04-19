@@ -5,13 +5,17 @@
 .lanyard-wrapper {
     position: relative;
     width: 100%;
-    height: 100%; /* was: 100vh */
+    height: 100%;
 }
 
-/* Respect users who've asked for reduced motion — we'll hide the
- * interactive 3D version and show nothing (or a static fallback later).
- * For now, this just prevents the canvas from rendering for those users.
- */
+/* Prevent mobile browsers from interpreting touches on the 3D canvas as
+  * scroll/zoom gestures. Without this, dragging the card on touch devices
+  * accidentally triggers the page scroll because native gesture handling
+  * runs on the compositor thread and wins the race against JS. */
+.lanyard-wrapper canvas {
+    touch-action: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .lanyard-wrapper {
         display: none;
