@@ -1,0 +1,61 @@
+{
+  "theme": {
+    "bg": "#0b0b0f",
+    "fg": "#f5f5f7",
+    "muted": "#9a9aa3",
+    "accent": "#7c5cff"
+  },
+  "front": {
+    "tag": "PORTFOLIO",
+    "name": "NEEL RAVAL",
+    "role": "Software Developer",
+    "footer": "neelluu.com",
+    "monogram": {
+      "mode": "letter",
+      "letter": "N",
+      "image": null
+    }
+  },
+  "back": {
+    "header": "CONNECT",
+    "handles": [
+      {
+        "label": "GITHUB",
+        "value": "@neelraval13"
+      },
+      {
+        "label": "LINKEDIN",
+        "value": "in/neel-raval"
+      },
+      {
+        "label": "X",
+        "value": "@foodiedev_py"
+      },
+      {
+        "label": "INSTAGRAM",
+        "value": "@neel_raval12"
+      },
+      {
+        "label": "EMAIL",
+        "value": "pnraval2007@gmail.com"
+      },
+      {
+        "label": "PHONE",
+        "value": "+91 82178 97162"
+      }
+    ],
+    "qr": {
+      "url": "https://neelluu.com",
+      "caption": "SCAN \u2192 NEELLUU.COM"
+    }
+  },
+  "strap": {
+    "text": "NEELLUU.COM",
+    "monogram_letter": "N",
+    "background": "accent"
+  },
+  "output": {
+    "card_path": "public/card-texture.png",
+    "strap_path": "public/card-lanyard.png"
+  }
+}

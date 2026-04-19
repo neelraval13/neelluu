@@ -1,0 +1,19 @@
+/* Lanyard component — container styles.
+ * The R3F Canvas fills this wrapper; physics and 3D happen inside.
+ */
+
+.lanyard-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%; /* was: 100vh */
+}
+
+/* Respect users who've asked for reduced motion — we'll hide the
+ * interactive 3D version and show nothing (or a static fallback later).
+ * For now, this just prevents the canvas from rendering for those users.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .lanyard-wrapper {
+        display: none;
+    }
+}
