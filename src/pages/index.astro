@@ -1,100 +1,145 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Lanyard from "../components/Lanyard/index.tsx";
 
 const name = "Neel Raval";
 ---
 
-<Layout title={`${name} - Coming Soon`}>
-  <main>
-    <section class="hero">
-      <p class="tag">Portfolio</p>
-      <h1>
-        Something great is <span class="accent">on the way</span>.
-      </h1>
-      <p class="sub">
-        Hi, I'm {name} - a software developer crafting a new home on the
-        web. Check back soon.
-      </p>
+<Layout title={`${name} — Coming Soon`}>
+    <main>
+        <section class="hero">
+            <div class="hero-text">
+                <p class="tag">Portfolio</p>
+                <h1>
+                    Something great is <span class="accent">on the way</span>.
+                </h1>
+                <p class="sub">
+                    Hi, I'm {name} — a software developer crafting a new home on the
+                    web. Check back soon.
+                </p>
 
-      <a class="cta" href="mailto:pnraval2007@gmail.com">Get in touch</a>
+                <a class="cta" href="mailto:pnraval2007@gmail.com"
+                    >Get in touch</a
+                >
 
-      <footer>
-        © {new Date().getFullYear()} {name}
-      </footer>
-    </section>
-  </main>
+                <footer>
+                    © {new Date().getFullYear()}
+                    {name}
+                </footer>
+            </div>
 
-  <style>
-    main {
-      min-height: 100dvh;
-      display: grid;
-      place-items: center;
-      padding: 2rem;
-      background:
-        radial-gradient(
-          1000px 600px at 20% 10%,
-          rgba(124, 92, 255, 0.15),
-          transparent 60%
-        ),
-        radial-gradient(
-          800px 500px at 80% 90%,
-          rgba(124, 92, 255, 0.1),
-          transparent 60%
-        );
-    }
+            <div class="hero-badge" aria-hidden="true">
+                <Lanyard client:only="react" position={[0, 0, 13]} fov={25} />
+            </div>
+        </section>
+    </main>
 
-    .hero {
-      max-width: 720px;
-      text-align: center;
-    }
+    <style>
+        main {
+            min-height: 100dvh;
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+            background:
+                radial-gradient(
+                    1000px 600px at 20% 10%,
+                    rgba(124, 92, 255, 0.15),
+                    transparent 60%
+                ),
+                radial-gradient(
+                    800px 500px at 80% 90%,
+                    rgba(124, 92, 255, 0.1),
+                    transparent 60%
+                );
+        }
 
-    .tag {
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-    }
+        .hero {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
 
-    h1 {
-      font-size: clamp(2rem, 6vw, 4rem);
-      line-height: 1.1;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
-    }
+        .hero-text {
+            max-width: 520px;
+        }
 
-    .accent {
-      color: var(--accent);
-    }
+        .hero-badge {
+            position: relative;
+            height: 85vh;
+            width: 100%;
+        }
 
-    .sub {
-      color: var(--muted);
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-    }
+        .tag {
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
 
-    .cta {
-      display: inline-block;
-      padding: 0.85rem 1.5rem;
-      border-radius: 999px;
-      background: var(--accent);
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition:
-        transform 0.15s ease,
-        opacity 0.15s ease;
-    }
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            line-height: 1.1;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
 
-    .cta:hover {
-      transform: translateY(-2px);
-      opacity: 0.95;
-    }
+        .accent {
+            color: var(--accent);
+        }
 
-    footer {
-      margin-top: 4rem;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-  </style>
+        .sub {
+            color: var(--muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta {
+            display: inline-block;
+            padding: 0.85rem 1.5rem;
+            border-radius: 999px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .cta:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        footer {
+            margin-top: 4rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        /* Stack on narrow viewports — lanyard above the text */
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .hero-text {
+                text-align: center;
+                margin: 0 auto;
+            }
+
+            .hero-badge {
+                height: 55vh;
+            }
+
+            footer {
+                margin-top: 2rem;
+            }
+        }
+    </style>
 </Layout>

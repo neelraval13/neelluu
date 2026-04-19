@@ -1,0 +1,7 @@
+{
+  "venvPath": ".",
+  "venv": ".venv-textures",
+  "include": ["scripts/textures"],
+  "typeCheckingMode": "standard",
+  "reportMissingImports": "error",
+}
