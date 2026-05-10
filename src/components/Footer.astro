@@ -1,0 +1,105 @@
+---
+const email = "pnraval2007@gmail.com";
+const year = new Date().getFullYear();
+---
+
+<footer class="px-5 sm:px-6 md:px-10 pt-20 sm:pt-28 md:pt-36 pb-10">
+    <div class="max-w-6xl mx-auto">
+        <p class="font-mono text-xs uppercase tracking-widest text-accent mb-4">
+            Get in touch
+        </p>
+
+        <h2
+            class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground tracking-tight mb-12 sm:mb-16"
+        >
+            Let's build.
+        </h2>
+
+        <a
+            href={`mailto:${email}`}
+            class="footer-email inline-block font-display text-2xl sm:text-3xl md:text-4xl text-foreground"
+        >
+            {email}
+        </a>
+
+        <ul class="flex flex-wrap gap-x-6 sm:gap-x-8 gap-y-3 mt-12 sm:mt-16">
+            <li>
+                <a
+                    href="https://linkedin.com/in/neel-raval"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="footer-social inline-flex items-baseline gap-1 text-muted hover:text-foreground transition-colors duration-200"
+                >
+                    <span>LinkedIn</span>
+                    <span class="footer-arrow text-xs">↗</span>
+                </a>
+            </li>
+            <li>
+                <a
+                    href="https://github.com/neelraval13"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="footer-social inline-flex items-baseline gap-1 text-muted hover:text-foreground transition-colors duration-200"
+                >
+                    <span>GitHub</span>
+                    <span class="footer-arrow text-xs">↗</span>
+                </a>
+            </li>
+            <li>
+                <a
+                    href="https://x.com/foodiedev_py"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="footer-social inline-flex items-baseline gap-1 text-muted hover:text-foreground transition-colors duration-200"
+                >
+                    <span>X</span>
+                    <span class="footer-arrow text-xs">↗</span>
+                </a>
+            </li>
+            <li>
+                <a
+                    href="https://instagram.com/neel_raval12"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="footer-social inline-flex items-baseline gap-1 text-muted hover:text-foreground transition-colors duration-200"
+                >
+                    <span>Instagram</span>
+                    <span class="footer-arrow text-xs">↗</span>
+                </a>
+            </li>
+        </ul>
+
+        <div
+            class="mt-20 sm:mt-24 pt-6 border-t border-border flex flex-col sm:flex-row sm:justify-between gap-2 text-xs font-mono text-muted"
+        >
+            <p>© {year} Neel Raval</p>
+            <p>Built in Bengaluru, India</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer-email {
+        text-decoration: underline;
+        text-decoration-color: transparent;
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 6px;
+        transition:
+            color 0.2s ease,
+            text-decoration-color 0.2s ease;
+    }
+
+    .footer-email:hover {
+        color: var(--color-accent);
+        text-decoration-color: var(--color-accent);
+    }
+
+    .footer-arrow {
+        display: inline-block;
+        transition: transform 0.2s ease;
+    }
+
+    .footer-social:hover .footer-arrow {
+        transform: translate(2px, -2px);
+    }
+</style>
