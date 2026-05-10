@@ -29,7 +29,7 @@ extend({ MeshLineGeometry, MeshLineMaterial });
 useGLTF.preload("/card.glb");
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Outer component — the Canvas, camera, lighting
+// Outer component - the Canvas, camera, lighting
 // ─────────────────────────────────────────────────────────────────────────────
 interface LanyardProps {
   position?: [number, number, number];
@@ -104,7 +104,7 @@ export default function Lanyard({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Inner Band component — rigid-body chain + card mesh + strap rendering
+// Inner Band component - rigid-body chain + card mesh + strap rendering
 // ─────────────────────────────────────────────────────────────────────────────
 interface BandProps {
   maxSpeed?: number;
@@ -118,7 +118,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
 
   // Rigid-body refs for the 4 joints in the rope chain + the card itself.
   // React 19's useRef<T>(null) returns RefObject<T | null>, but the Rapier
-  // joint hooks expect RefObject<T>. The `null!` assertion bridges the gap —
+  // joint hooks expect RefObject<T>. The `null!` assertion bridges the gap -
   // the refs start null but the joint hooks only read them post-mount.
   const fixed = useRef<RapierRigidBody>(null!);
   const j1 = useRef<RapierRigidBody>(null!);
@@ -126,7 +126,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const j3 = useRef<RapierRigidBody>(null!);
   const card = useRef<RapierRigidBody>(null!);
 
-  // Reusable vectors — allocated once, mutated per frame to avoid GC pressure
+  // Reusable vectors - allocated once, mutated per frame to avoid GC pressure
   const vec = new THREE.Vector3();
   const ang = new THREE.Vector3();
   const rot = new THREE.Vector3();
@@ -141,7 +141,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   };
 
   // Load the 3D model (geometry + metal material for clip/clamp). We ignore
-  // the embedded card texture — it's replaced by our custom PNG below.
+  // the embedded card texture - it's replaced by our custom PNG below.
   const { nodes, materials } = useGLTF("/card.glb") as any;
 
   // Load our custom textures from /public
@@ -161,7 +161,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   strapTexture.wrapS = THREE.RepeatWrapping;
   strapTexture.wrapT = THREE.RepeatWrapping;
 
-  // Catmull-Rom curve interpolated through the 4 joint positions — produces
+  // Catmull-Rom curve interpolated through the 4 joint positions - produces
   // the smooth visible strap. Updated every frame in useFrame below.
   const [curve] = useState(
     () =>
@@ -186,7 +186,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
     [0, 1.45, 0],
   ]);
 
-  // Cursor state feedback — grab on hover, grabbing during drag
+  // Cursor state feedback - grab on hover, grabbing during drag
   useEffect(() => {
     if (hovered) {
       document.body.style.cursor = dragged ? "grabbing" : "grab";
@@ -197,7 +197,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   }, [hovered, dragged]);
 
   useFrame((state, delta) => {
-    // Drag handling — project pointer into 3D world space, move the card's
+    // Drag handling - project pointer into 3D world space, move the card's
     // kinematic translation to follow
     if (dragged && typeof dragged !== "boolean") {
       vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
@@ -212,7 +212,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
     }
 
     if (fixed.current) {
-      // Smooth out the j1/j2 positions with a distance-weighted lerp — makes
+      // Smooth out the j1/j2 positions with a distance-weighted lerp - makes
       // the strap look less jittery between physics steps
       [j1, j2].forEach((ref) => {
         const r = ref.current as any;
@@ -251,7 +251,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   return (
     <>
       <group position={[0, 4, 0]}>
-        {/* Fixed anchor at top — where the lanyard "hangs from" */}
+        {/* Fixed anchor at top - where the lanyard "hangs from" */}
         <RigidBody ref={fixed} {...segmentProps} type="fixed" />
 
         {/* Three rope-joint segments */}
@@ -280,7 +280,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
           <BallCollider args={[0.1]} />
         </RigidBody>
 
-        {/* The card itself — dynamic normally, kinematic while dragged */}
+        {/* The card itself - dynamic normally, kinematic while dragged */}
         <RigidBody
           position={[2, 0, 0]}
           ref={card}
@@ -306,7 +306,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
               );
             }}
           >
-            {/* Card face — our custom texture, PBR material for reflective feel */}
+            {/* Card face - our custom texture, PBR material for reflective feel */}
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial
                 map={cardTexture}
@@ -316,7 +316,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
                 metalness={0.8}
               />
             </mesh>
-            {/* Metal clip and clamp — use the GLB's embedded metal material */}
+            {/* Metal clip and clamp - use the GLB's embedded metal material */}
             <mesh
               geometry={nodes.clip.geometry}
               material={materials.metal}
@@ -327,7 +327,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
         </RigidBody>
       </group>
 
-      {/* The strap itself — thick textured line through the curve points */}
+      {/* The strap itself - thick textured line through the curve points */}
       <mesh ref={band}>
         <meshLineGeometry />
         <meshLineMaterial

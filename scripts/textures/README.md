@@ -2,8 +2,8 @@
 
 Renders the two PNG textures used by the 3D lanyard badge:
 
-- `public/card-texture.png` — the card face atlas (front + back packed side-by-side, matches the GLB's UV layout)
-- `public/card-lanyard.png` — the repeating strap pattern
+- `public/card-texture.png` - the card face atlas (front + back packed side-by-side, matches the GLB's UV layout)
+- `public/card-lanyard.png` - the repeating strap pattern
 
 Both are static assets; regeneration is a **design-time** step, not a build step. You run this only when content changes (new handle, updated role, different monogram letter, etc.), then commit the regenerated PNGs.
 
@@ -67,7 +67,7 @@ Matches your site's CSS variables. Change here and the textures will follow the 
 }
 ```
 
-**Monogram** — two modes:
+**Monogram** - two modes:
 
 _Letter mode_ (default):
 ```json
@@ -93,7 +93,7 @@ Drops in a PNG relative to the `config.json` location. Transparent-background PN
 }
 ```
 
-**Handles** — add/remove freely (3 to 8 works well; more gets cramped). Row height auto-scales to fit within the available space.
+**Handles** - add/remove freely (3 to 8 works well; more gets cramped). Row height auto-scales to fit within the available space.
 
 ### Strap (lanyard ribbon)
 ```json
@@ -116,10 +116,10 @@ Relative to the repo root. Don't change these unless you also update the Astro c
 
 ## What's *not* configurable
 
-The overall layout (centered hierarchy on front, stacked handles + QR on back) is hardcoded in `generate.py`. Layout changes require editing the Python code itself — the config is intentionally content-only, because layout changes need judgment calls that a JSON schema can't express cleanly.
+The overall layout (centered hierarchy on front, stacked handles + QR on back) is hardcoded in `generate.py`. Layout changes require editing the Python code itself - the config is intentionally content-only, because layout changes need judgment calls that a JSON schema can't express cleanly.
 
-If you need a layout change — different arrangement, landscape orientation, a photo on the card, etc. — edit the `build_front` / `build_back` functions in `generate.py` directly. They're well-commented and each face is ~50 lines.
+If you need a layout change - different arrangement, landscape orientation, a photo on the card, etc. - edit the `build_front` / `build_back` functions in `generate.py` directly. They're well-commented and each face is ~50 lines.
 
 ## Why Python for this?
 
-Texture generation is offline tooling — nothing ships to users, nothing runs at build time. Python with Pillow gives us the fastest iteration for 2D image composition, and the `qrcode[pil]` library is more mature than any Node equivalent. Adding Node/canvas dependencies to the project just for occasional texture regeneration would bloat `node_modules` unnecessarily. The generated PNGs are what the runtime actually uses; the script is just a tool.
+Texture generation is offline tooling - nothing ships to users, nothing runs at build time. Python with Pillow gives us the fastest iteration for 2D image composition, and the `qrcode[pil]` library is more mature than any Node equivalent. Adding Node/canvas dependencies to the project just for occasional texture regeneration would bloat `node_modules` unnecessarily. The generated PNGs are what the runtime actually uses; the script is just a tool.

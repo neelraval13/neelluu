@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Lanyard texture generator — config-driven.
+Lanyard texture generator - config-driven.
 
 Reads ./config.json and renders two PNGs:
   • card-texture.png   (2048×2048 atlas: left half = front, right half = back)
@@ -35,7 +35,7 @@ PAD = 72  # inner padding within each face
 STRAP_W, STRAP_H = 1024, 260
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Font discovery — tries common paths across macOS / Linux
+# Font discovery - tries common paths across macOS / Linux
 # ─────────────────────────────────────────────────────────────────────────────
 FONT_CANDIDATES = {
     "bold": [
@@ -94,7 +94,7 @@ def soft_glow(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Monogram rendering — shared between card front and strap
+# Monogram rendering - shared between card front and strap
 # ─────────────────────────────────────────────────────────────────────────────
 def draw_letter_monogram(
     canvas: Image.Image, x: int, y: int, size: int, letter: str, bg: tuple, fg: tuple
@@ -117,7 +117,7 @@ def draw_letter_monogram(
         d.rectangle((x1 - stroke, y0, x1, y1), fill=fg)  # right vertical
         d.line((x0 + stroke, y0, x1 - stroke, y1), fill=fg, width=stroke)  # diagonal
     else:
-        # Fallback for other letters — render from font, centered
+        # Fallback for other letters - render from font, centered
         f = load_font("bold", int(size * 0.6))
         bbox = d.textbbox((0, 0), letter.upper(), font=f)
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
@@ -205,7 +205,7 @@ def build_front(canvas: Image.Image, cfg: dict, theme: dict, config_dir: Path) -
         config_dir,
     )
 
-    # Name — fit-to-width: shrink font size if the name is too long
+    # Name - fit-to-width: shrink font size if the name is too long
     name = cfg["name"]
     name_size = 120
     name_font = load_font("bold", name_size)
@@ -226,7 +226,7 @@ def build_front(canvas: Image.Image, cfg: dict, theme: dict, config_dir: Path) -
     rw = d.textlength(cfg["role"], font=role_font)
     d.text((x0 + (HALF_W - rw) / 2, 770), cfg["role"], font=role_font, fill=muted)
 
-    # Footer — accent mono
+    # Footer - accent mono
     foot_font = load_font("mono", 36)
     fw = d.textlength(cfg["footer"], font=foot_font)
     d.text(
@@ -265,7 +265,7 @@ def build_back(canvas: Image.Image, cfg: dict, theme: dict) -> None:
         fill=accent,
     )
 
-    # Handles block — dynamic row height based on count
+    # Handles block - dynamic row height based on count
     handles = cfg["handles"]
     n = len(handles)
     if n == 0:
@@ -345,7 +345,7 @@ def build_strap(cfg: dict, theme: dict) -> Image.Image:
     img = Image.new("RGBA", (STRAP_W, STRAP_H), (*strap_bg, 255))
     d = ImageDraw.Draw(img)
 
-    # Center monogram — inverted palette vs strap
+    # Center monogram - inverted palette vs strap
     mono_size = 130
     cx, cy = STRAP_W // 2, STRAP_H // 2
     mx, my = cx - mono_size // 2, cy - mono_size // 2

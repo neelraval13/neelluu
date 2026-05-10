@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Variable fonts - self-hosted via fontsource */
+@import "@fontsource-variable/newsreader";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+@theme {
+    /* Brand colors */
+    --color-background: #0a0a0b;
+    --color-foreground: #f5f5f5;
+    --color-muted: #8a8a8a;
+    --color-subtle: #16161a;
+    --color-border: #2a2a2c;
+    --color-accent: #ff3d9a;
+    --color-accent-foreground: #0a0a0b;
+
+    /* Typography */
+    --font-display: "Newsreader Variable", "Newsreader", Georgia, serif;
+    --font-sans: "Geist Variable", "Geist", system-ui, sans-serif;
+    --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, monospace;
+
+    /* Display headline - scales from 2.25rem on narrow phones to 6.5rem on large displays */
+    --text-display: clamp(2.25rem, 9vw, 6.5rem);
+    --text-display--line-height: 1.05;
+    --text-display--letter-spacing: -0.02em;
+    --text-display--font-weight: 400;
+}
+
+@layer base {
+    :root {
+        color-scheme: dark;
+    }
+
+    html {
+        background: var(--color-background);
+        color: var(--color-foreground);
+        font-family: var(--font-sans);
+        font-feature-settings: "ss01", "cv11";
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100dvh;
+    }
+
+    ::selection {
+        background: var(--color-accent);
+        color: var(--color-accent-foreground);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
