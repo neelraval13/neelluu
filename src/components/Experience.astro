@@ -1,0 +1,77 @@
+---
+import Ladder3D from "./experience/Ladder3D.tsx";
+---
+
+<section id="experience" aria-labelledby="experience-heading" class="relative">
+    <header
+        class="px-5 sm:px-6 md:px-10 pt-20 sm:pt-24 md:pt-32 pb-10 sm:pb-14"
+    >
+        <div class="w-full max-w-6xl mx-auto">
+            <p
+                class="font-mono text-xs sm:text-[13px] uppercase tracking-[0.14em] text-accent mb-4 sm:mb-6"
+            >
+                Experience
+            </p>
+            <h2
+                id="experience-heading"
+                class="font-display text-display text-foreground m-0 max-w-[16ch]"
+            >
+                Where I&rsquo;ve built.
+            </h2>
+        </div>
+    </header>
+
+    <div data-experience-sticky-region class="relative" style="height: 220vh;">
+        <div class="sticky top-0 h-dvh w-full overflow-hidden">
+            <div class="absolute inset-0">
+                <Ladder3D client:only="react" />
+            </div>
+        </div>
+    </div>
+
+    <ul class="sr-only">
+        <li>
+            May 2026 to present, Engineering Lead Software and Product, Odyssey
+            Therapeia
+        </li>
+        <li>October 2025, promoted to Engineering Lead Software and Product</li>
+        <li>February 2025, promoted to Lead Developer at Odyssey Therapeia</li>
+        <li>August 2024, joined Odyssey Therapeia as Software Developer I</li>
+        <li>July 2023, joined Ankr Health as Software Developer I</li>
+    </ul>
+</section>
+
+<style is:global>
+    .rung-label {
+        color: var(--color-foreground);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        line-height: 1.4;
+        white-space: nowrap;
+        user-select: none;
+        transform: translateY(-50%);
+    }
+    .rung-label__date {
+        color: var(--color-muted);
+        font-size: 12px;
+    }
+    .rung-label__transition {
+        color: var(--color-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 10px;
+        margin-top: 3px;
+        font-weight: 500;
+    }
+    .rung-label__role {
+        color: var(--color-foreground);
+        font-family: var(--font-sans);
+        font-size: 12px;
+        margin-top: 4px;
+        opacity: 0.78;
+    }
+    .rung-label__sep {
+        color: var(--color-muted);
+        margin: 0 3px;
+    }
+</style>
