@@ -14,7 +14,14 @@ import {
   type Rung,
 } from "./data";
 
-const SKIN_COLOR = "#e8e0d4";
+const COLORS = {
+  skin: "#d4b896",
+  shirt: "#ededee",
+  pants: "#2a2a30",
+  shoe: "#16161a",
+  hair: "#2a1f18",
+} as const;
+
 const FLOOR_FOOT_Y = BOTTOM_Y - 0.5;
 
 function positionLimb(mesh: Mesh | null, from: Vector3, to: Vector3) {
@@ -46,6 +53,21 @@ function computeKnee(
   );
   midpoint.z += perpDist;
   return midpoint;
+}
+
+// Determine which rung the figure is closest to at a given scroll progress
+function getActiveRungId(progress: number, totalRungs: number): number {
+  const cycles = totalRungs;
+  const cyclePos = progress * cycles;
+  const cycleIndex = Math.max(0, Math.min(cycles - 1, Math.floor(cyclePos)));
+  const cyclePhase = Math.max(0, Math.min(1, cyclePos - cycleIndex));
+
+  if (cycleIndex < totalRungs - 1) {
+    const fromRungId = totalRungs - cycleIndex;
+    const toRungId = fromRungId - 1;
+    return cyclePhase < 0.5 ? fromRungId : toRungId;
+  }
+  return 1;
 }
 
 function Ladder() {
@@ -115,11 +137,10 @@ function Floor() {
 function Clouds() {
   return (
     <group position={[0, TOP_Y + 0.5, 0]}>
-      {/* Background clouds - sit behind the figure (z negative), above the upper rungs */}
       <mesh position={[-1.8, 0.9, -0.6]} scale={[1.5, 0.55, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#3c3c40"
+          color="#e8e8ee"
           roughness={1}
           opacity={0.55}
           transparent
@@ -128,7 +149,7 @@ function Clouds() {
       <mesh position={[0.4, 1.1, -0.4]} scale={[1.7, 0.6, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#3c3c40"
+          color="#e8e8ee"
           roughness={1}
           opacity={0.55}
           transparent
@@ -137,7 +158,7 @@ function Clouds() {
       <mesh position={[1.9, 1.0, -0.5]} scale={[1.3, 0.5, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#3c3c40"
+          color="#e8e8ee"
           roughness={1}
           opacity={0.55}
           transparent
@@ -146,19 +167,16 @@ function Clouds() {
       <mesh position={[-2.1, 1.3, -0.3]} scale={[1.0, 0.45, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#3c3c40"
+          color="#e8e8ee"
           roughness={1}
           opacity={0.55}
           transparent
         />
       </mesh>
-
-      {/* Foreground clouds - sit IN FRONT of the figure (z positive), hiding upper body at start.
-          Cloud Y range covers ~5.1 to 6.5 in ladder-local. Figure feet at 5.0 stay visible below. */}
       <mesh position={[-0.5, 0.3, 0.7]} scale={[1.7, 1.27, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#2a2a2e"
+          color="#ffffff"
           roughness={1}
           opacity={0.92}
           transparent
@@ -167,27 +185,27 @@ function Clouds() {
       <mesh position={[0.6, 0.4, 0.8]} scale={[1.5, 1.2, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#2a2a2e"
+          color="#ffffff"
           roughness={1}
-          opacity={0.88}
+          opacity={0.9}
           transparent
         />
       </mesh>
       <mesh position={[-1.4, 0.4, 0.65]} scale={[1.1, 1.0, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#2a2a2e"
+          color="#f8f8fc"
           roughness={1}
-          opacity={0.85}
+          opacity={0.88}
           transparent
         />
       </mesh>
       <mesh position={[1.6, 0.35, 0.6]} scale={[1.0, 0.95, 1]}>
         <sphereGeometry args={[0.55, 16, 16]} />
         <meshStandardMaterial
-          color="#2a2a2e"
+          color="#f8f8fc"
           roughness={1}
-          opacity={0.85}
+          opacity={0.88}
           transparent
         />
       </mesh>
@@ -233,6 +251,8 @@ function Climber({
   const leftShinRef = useRef<Mesh>(null);
   const rightThighRef = useRef<Mesh>(null);
   const rightShinRef = useRef<Mesh>(null);
+  const leftFootRef = useRef<Mesh>(null);
+  const rightFootRef = useRef<Mesh>(null);
 
   const tempVecs = useMemo(
     () => ({
@@ -252,37 +272,29 @@ function Climber({
   useFrame(() => {
     if (!figureRef.current) return;
 
-    // Cycles = totalRungs (10 rung-to-rung transitions + 1 final rung-to-floor step)
     const cycles = totalRungs;
     const cyclePos = progress * cycles;
     const cycleIndex = Math.max(0, Math.min(cycles - 1, Math.floor(cyclePos)));
     const cyclePhase = Math.max(0, Math.min(1, cyclePos - cycleIndex));
 
-    // Determine the from/to Y for this cycle
     let fromRungY: number;
     let toRungY: number;
     if (cycleIndex < totalRungs - 1) {
-      // Standard rung-to-rung transition
-      const fromRungId = totalRungs - cycleIndex; // 11, 10, 9, ..., 2
-      const toRungId = fromRungId - 1; // 10, 9, ..., 1
+      const fromRungId = totalRungs - cycleIndex;
+      const toRungId = fromRungId - 1;
       fromRungY = rungY(fromRungId);
       toRungY = rungY(toRungId);
     } else {
-      // Final cycle: step from rung 1 onto the floor
       fromRungY = rungY(1);
       toRungY = FLOOR_FOOT_Y;
     }
 
-    // Hip Y descends linearly through this transition
     const hipY = fromRungY + TOTAL_LEG - cyclePhase * (fromRungY - toRungY);
-
-    // Alternate which leg leads the descent each cycle
     const rightLegLeads = cycleIndex % 2 === 0;
 
     let leftFootY: number;
     let rightFootY: number;
     if (cyclePhase < 0.5) {
-      // Leading leg moves first: from current rung down to next
       const t = cyclePhase * 2;
       const movingFootY = fromRungY - t * (fromRungY - toRungY);
       if (rightLegLeads) {
@@ -293,7 +305,6 @@ function Climber({
         rightFootY = fromRungY;
       }
     } else {
-      // Following leg catches up to join the leader on the next rung
       const t = (cyclePhase - 0.5) * 2;
       const movingFootY = fromRungY - t * (fromRungY - toRungY);
       if (rightLegLeads) {
@@ -307,7 +318,6 @@ function Climber({
 
     figureRef.current.position.set(0, hipY, 0.22);
 
-    // Convert feet to figure-local Y
     const leftFootLocalY = leftFootY - hipY;
     const rightFootLocalY = rightFootY - hipY;
 
@@ -333,133 +343,164 @@ function Climber({
     positionLimb(leftShinRef.current, leftKnee, tempVecs.leftFoot);
     positionLimb(rightThighRef.current, tempVecs.rightHip, rightKnee);
     positionLimb(rightShinRef.current, rightKnee, tempVecs.rightFoot);
+
+    if (leftFootRef.current) {
+      leftFootRef.current.position.set(-HIP_X, leftFootLocalY, 0.05);
+    }
+    if (rightFootRef.current) {
+      rightFootRef.current.position.set(HIP_X, rightFootLocalY, 0.05);
+    }
   });
 
   return (
     <group ref={figureRef}>
-      {/* Upper body - at hip level (Y=0) and above */}
       <group>
-        {/* Head */}
         <mesh position={[0, 0.6, 0]}>
           <sphereGeometry args={[0.13, 20, 20]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.45}
-            metalness={0.12}
+            color={COLORS.skin}
+            roughness={0.55}
+            metalness={0.05}
           />
         </mesh>
-        {/* Neck */}
+        <mesh position={[0, 0.6, 0]}>
+          <sphereGeometry
+            args={[0.138, 22, 16, 0, Math.PI * 2, 0, Math.PI * 0.55]}
+          />
+          <meshStandardMaterial
+            color={COLORS.hair}
+            roughness={0.7}
+            metalness={0.05}
+          />
+        </mesh>
         <mesh position={[0, 0.46, 0]}>
           <cylinderGeometry args={[0.04, 0.05, 0.06, 10]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.45}
-            metalness={0.12}
+            color={COLORS.skin}
+            roughness={0.55}
+            metalness={0.05}
           />
         </mesh>
-        {/* Torso */}
         <mesh position={[0, 0.22, 0]}>
           <cylinderGeometry args={[0.115, 0.09, 0.45, 14]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.45}
-            metalness={0.12}
+            color={COLORS.shirt}
+            roughness={0.65}
+            metalness={0.05}
           />
         </mesh>
-        {/* Right upper arm */}
         <mesh position={[0.2, 0.34, 0]} rotation={[0, 0, 0.65]}>
           <cylinderGeometry args={[0.034, 0.03, 0.27, 10]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.45}
-            metalness={0.12}
+            color={COLORS.shirt}
+            roughness={0.65}
+            metalness={0.05}
           />
         </mesh>
-        {/* Left upper arm */}
         <mesh position={[-0.2, 0.34, 0]} rotation={[0, 0, -0.65]}>
           <cylinderGeometry args={[0.034, 0.03, 0.27, 10]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.45}
-            metalness={0.12}
+            color={COLORS.shirt}
+            roughness={0.65}
+            metalness={0.05}
           />
         </mesh>
-        {/* Right forearm */}
         <mesh position={[0.34, 0.18, 0.04]} rotation={[0.2, 0, 0.4]}>
           <cylinderGeometry args={[0.03, 0.028, 0.27, 10]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.45}
-            metalness={0.12}
+            color={COLORS.shirt}
+            roughness={0.65}
+            metalness={0.05}
           />
         </mesh>
-        {/* Left forearm */}
         <mesh position={[-0.34, 0.18, 0.04]} rotation={[0.2, 0, -0.4]}>
           <cylinderGeometry args={[0.03, 0.028, 0.27, 10]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.45}
-            metalness={0.12}
+            color={COLORS.shirt}
+            roughness={0.65}
+            metalness={0.05}
           />
         </mesh>
-        {/* Right hand */}
         <mesh position={[0.4, 0.06, 0.08]}>
           <sphereGeometry args={[0.045, 12, 12]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.5}
-            metalness={0.12}
+            color={COLORS.skin}
+            roughness={0.55}
+            metalness={0.05}
           />
         </mesh>
-        {/* Left hand */}
         <mesh position={[-0.4, 0.06, 0.08]}>
           <sphereGeometry args={[0.045, 12, 12]} />
           <meshStandardMaterial
-            color={SKIN_COLOR}
-            roughness={0.5}
-            metalness={0.12}
+            color={COLORS.skin}
+            roughness={0.55}
+            metalness={0.05}
           />
         </mesh>
       </group>
 
-      {/* Legs - positioned procedurally each frame */}
       <mesh ref={leftThighRef}>
-        <cylinderGeometry args={[0.04, 0.038, 1, 12]} />
+        <cylinderGeometry args={[0.045, 0.042, 1, 12]} />
         <meshStandardMaterial
-          color={SKIN_COLOR}
-          roughness={0.45}
-          metalness={0.12}
+          color={COLORS.pants}
+          roughness={0.7}
+          metalness={0.05}
         />
       </mesh>
       <mesh ref={leftShinRef}>
-        <cylinderGeometry args={[0.038, 0.034, 1, 12]} />
+        <cylinderGeometry args={[0.042, 0.038, 1, 12]} />
         <meshStandardMaterial
-          color={SKIN_COLOR}
-          roughness={0.45}
-          metalness={0.12}
+          color={COLORS.pants}
+          roughness={0.7}
+          metalness={0.05}
         />
       </mesh>
       <mesh ref={rightThighRef}>
-        <cylinderGeometry args={[0.04, 0.038, 1, 12]} />
+        <cylinderGeometry args={[0.045, 0.042, 1, 12]} />
         <meshStandardMaterial
-          color={SKIN_COLOR}
-          roughness={0.45}
-          metalness={0.12}
+          color={COLORS.pants}
+          roughness={0.7}
+          metalness={0.05}
         />
       </mesh>
       <mesh ref={rightShinRef}>
-        <cylinderGeometry args={[0.038, 0.034, 1, 12]} />
+        <cylinderGeometry args={[0.042, 0.038, 1, 12]} />
         <meshStandardMaterial
-          color={SKIN_COLOR}
-          roughness={0.45}
-          metalness={0.12}
+          color={COLORS.pants}
+          roughness={0.7}
+          metalness={0.05}
+        />
+      </mesh>
+
+      <mesh ref={leftFootRef}>
+        <boxGeometry args={[0.085, 0.04, 0.14]} />
+        <meshStandardMaterial
+          color={COLORS.shoe}
+          roughness={0.5}
+          metalness={0.1}
+        />
+      </mesh>
+      <mesh ref={rightFootRef}>
+        <boxGeometry args={[0.085, 0.04, 0.14]} />
+        <meshStandardMaterial
+          color={COLORS.shoe}
+          roughness={0.5}
+          metalness={0.1}
         />
       </mesh>
     </group>
   );
 }
 
-function AnimatedScene({ progress }: { progress: number }) {
+function AnimatedScene({
+  progress,
+  hideLabels,
+  reduceBloom,
+}: {
+  progress: number;
+  hideLabels: boolean;
+  reduceBloom: boolean;
+}) {
   const ladderGroupRef = useRef<Group>(null);
 
   useFrame(() => {
@@ -498,18 +539,16 @@ function AnimatedScene({ progress }: { progress: number }) {
       <group ref={ladderGroupRef} position={[0, -4.6, 0]}>
         <Ladder />
         <Floor />
-        {RUNGS.map((rung) => (
-          <RungLabel key={rung.id} rung={rung} />
-        ))}
+        {!hideLabels &&
+          RUNGS.map((rung) => <RungLabel key={rung.id} rung={rung} />)}
         <Climber progress={progress} totalRungs={RUNGS.length} />
-        {/* Clouds rendered AFTER Climber so foreground clouds layer on top correctly */}
         <Clouds />
       </group>
 
       <EffectComposer>
         <Bloom
-          intensity={0.5}
-          luminanceThreshold={0.7}
+          intensity={reduceBloom ? 0.25 : 0.5}
+          luminanceThreshold={reduceBloom ? 0.85 : 0.7}
           luminanceSmoothing={0.4}
           mipmapBlur
         />
@@ -518,10 +557,78 @@ function AnimatedScene({ progress }: { progress: number }) {
   );
 }
 
+function CurrentRungOverlay({ progress }: { progress: number }) {
+  const activeRungId = getActiveRungId(progress, RUNGS.length);
+  const activeRung = RUNGS.find((r) => r.id === activeRungId);
+  if (!activeRung) return null;
+
+  return (
+    <div className="experience-rung-overlay" key={activeRung.id}>
+      <div className="experience-rung-overlay__date">
+        {activeRung.monthYear}
+      </div>
+      {activeRung.transitionLabel && (
+        <div className="experience-rung-overlay__transition">
+          {activeRung.transitionLabel}
+        </div>
+      )}
+      {activeRung.role && activeRung.company && (
+        <div className="experience-rung-overlay__role">
+          {activeRung.role} <span aria-hidden="true">·</span>{" "}
+          {activeRung.company}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReducedMotionList() {
+  const sortedRungs = [...RUNGS].sort((a, b) => b.id - a.id);
+  return (
+    <ol className="experience-reduced-motion-list">
+      {sortedRungs.map((rung) => (
+        <li key={rung.id} className="experience-reduced-motion-list__item">
+          <div className="experience-reduced-motion-list__date">
+            {rung.monthYear}
+          </div>
+          {rung.transitionLabel && (
+            <div className="experience-reduced-motion-list__transition">
+              {rung.transitionLabel}
+            </div>
+          )}
+          {rung.role && rung.company && (
+            <div className="experience-reduced-motion-list__role">
+              {rung.role} <span aria-hidden="true">·</span> {rung.company}
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export default function Ladder3D() {
   const [progress, setProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 767px)").matches;
+  });
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   useEffect(() => {
+    const mobileMQ = window.matchMedia("(max-width: 767px)");
+    const updateMobile = (e: MediaQueryListEvent | MediaQueryList) =>
+      setIsMobile(e.matches);
+    mobileMQ.addEventListener("change", updateMobile);
+
+    const motionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotion = (e: MediaQueryListEvent | MediaQueryList) =>
+      setReducedMotion(e.matches);
+    motionMQ.addEventListener("change", updateMotion);
+
     const handleScroll = () => {
       const region = document.querySelector<HTMLElement>(
         "[data-experience-sticky-region]",
@@ -535,20 +642,38 @@ export default function Ladder3D() {
       const p = Math.max(0, Math.min(1, scrolled / scrollableDistance));
       setProgress(p);
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      mobileMQ.removeEventListener("change", updateMobile);
+      motionMQ.removeEventListener("change", updateMotion);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
+  if (reducedMotion) {
+    return <ReducedMotionList />;
+  }
+
   return (
-    <Canvas
-      camera={{ position: [0, 0, 11], fov: 33 }}
-      style={{ background: "transparent" }}
-      gl={{ antialias: true, alpha: true }}
-      dpr={[1, 2]}
-    >
-      <AnimatedScene progress={progress} />
-    </Canvas>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <Canvas
+        camera={{
+          position: [0, 0, isMobile ? 14 : 11],
+          fov: isMobile ? 38 : 33,
+        }}
+        style={{ background: "transparent" }}
+        gl={{ antialias: true, alpha: true }}
+        dpr={isMobile ? [1, 1.5] : [1, 2]}
+      >
+        <AnimatedScene
+          progress={progress}
+          hideLabels={isMobile}
+          reduceBloom={isMobile}
+        />
+      </Canvas>
+      {isMobile && <CurrentRungOverlay progress={progress} />}
+    </div>
   );
 }

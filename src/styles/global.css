@@ -60,3 +60,106 @@
         }
     }
 }
+
+/* Mobile rung overlay - HUD card, top-right */
+.experience-rung-overlay {
+    position: absolute;
+    top: max(20px, env(safe-area-inset-top, 20px));
+    right: 16px;
+    max-width: 260px;
+    padding: 14px 16px;
+    background: color-mix(in srgb, var(--color-background) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    z-index: 10;
+    pointer-events: none;
+    animation: rungOverlayFadeIn 0.25s ease-out;
+}
+
+@keyframes rungOverlayFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.experience-rung-overlay__date {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+}
+
+.experience-rung-overlay__transition {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.experience-rung-overlay__role {
+    font-size: 0.85rem;
+    color: var(--color-foreground);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* Reduced motion fallback - flat timeline list, no canvas */
+.experience-reduced-motion-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.experience-reduced-motion-list__item {
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--color-border);
+}
+
+.experience-reduced-motion-list__item:first-child {
+    border-top: none;
+}
+
+.experience-reduced-motion-list__date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+}
+
+.experience-reduced-motion-list__transition {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.experience-reduced-motion-list__role {
+    font-size: 1rem;
+    color: var(--color-foreground);
+    margin-top: 6px;
+}
+
+/* Collapse the sticky region when reduced motion is on */
+@media (prefers-reduced-motion: reduce) {
+    [data-experience-sticky-region] {
+        height: auto !important;
+    }
+    [data-experience-sticky-region] > * {
+        position: static !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+}
