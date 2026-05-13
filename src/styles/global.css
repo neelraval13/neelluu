@@ -5,6 +5,10 @@
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
 
+/* ============================================================================
+   THEME TOKENS
+   ============================================================================ */
+
 @theme {
     /* Brand colors */
     --color-background: #0a0a0b;
@@ -26,6 +30,10 @@
     --text-display--letter-spacing: -0.02em;
     --text-display--font-weight: 400;
 }
+
+/* ============================================================================
+   BASE STYLES
+   ============================================================================ */
 
 @layer base {
     :root {
@@ -61,7 +69,12 @@
     }
 }
 
-/* Mobile rung overlay - HUD card, top-right */
+/* ============================================================================
+   EXPERIENCE SECTION
+   ============================================================================ */
+
+/* --- Mobile HUD overlay (clickable, opens detail sheet) --- */
+
 .experience-rung-overlay {
     position: absolute;
     top: max(20px, env(safe-area-inset-top, 20px));
@@ -89,6 +102,25 @@
     }
 }
 
+.experience-rung-overlay--clickable {
+    pointer-events: auto;
+    cursor: pointer;
+    background: color-mix(in srgb, var(--color-background) 78%, transparent);
+    border: 1px solid var(--color-border);
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    appearance: none;
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.experience-rung-overlay--clickable:active {
+    transform: scale(0.98);
+    border-color: var(--color-accent);
+}
+
 .experience-rung-overlay__date {
     font-family: var(--font-mono);
     font-size: 0.7rem;
@@ -113,7 +145,19 @@
     line-height: 1.4;
 }
 
-/* Reduced motion fallback - flat timeline list, no canvas */
+.experience-rung-overlay__hint {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* --- Reduced motion fallback - flat timeline list --- */
+
 .experience-reduced-motion-list {
     list-style: none;
     padding: 0;
@@ -152,7 +196,6 @@
     margin-top: 6px;
 }
 
-/* Collapse the sticky region when reduced motion is on */
 @media (prefers-reduced-motion: reduce) {
     [data-experience-sticky-region] {
         height: auto !important;
@@ -164,7 +207,8 @@
     }
 }
 
-/* Left-positioned rung labels (anchored on right edge, text reaches toward ladder) */
+/* --- Ladder rung labels (anchored right of the rail, text reaches toward it) --- */
+
 .rung-label--left {
     text-align: right;
     transform: translateX(-100%);
@@ -179,13 +223,14 @@
     word-break: keep-all;
 }
 
-/* Desktop detail card - right side of viewport, updates with active rung */
+/* --- Desktop detail card (right side, updates with active rung) --- */
+
 .experience-detail-card {
     position: absolute;
     top: 50%;
     right: 24px;
     transform: translateY(-50%);
-    width: min(32vw, 360px); /* was 34vw, 400px - slightly tighter */
+    width: min(32vw, 360px);
     padding: 22px 24px;
     background: color-mix(in srgb, var(--color-background) 78%, transparent);
     backdrop-filter: blur(14px) saturate(140%);
@@ -298,38 +343,8 @@
     border-bottom-color: var(--color-accent);
 }
 
-/* Make the mobile HUD clickable - swap pointer-events, add affordance */
-.experience-rung-overlay--clickable {
-    pointer-events: auto;
-    cursor: pointer;
-    background: color-mix(in srgb, var(--color-background) 78%, transparent);
-    border: 1px solid var(--color-border);
-    color: inherit;
-    text-align: left;
-    font: inherit;
-    appearance: none;
-    transition:
-        transform 0.15s ease,
-        border-color 0.15s ease;
-}
+/* --- Mobile bottom sheet (opens when HUD is tapped) --- */
 
-.experience-rung-overlay--clickable:active {
-    transform: scale(0.98);
-    border-color: var(--color-accent);
-}
-
-.experience-rung-overlay__hint {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    color: var(--color-muted);
-    text-transform: uppercase;
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid var(--color-border);
-}
-
-/* Bottom sheet for detail view */
 .experience-rung-sheet-backdrop {
     position: fixed;
     inset: 0;
@@ -499,4 +514,329 @@
 .experience-rung-sheet__project-link:hover,
 .experience-rung-sheet__project-link:focus-visible {
     border-bottom-color: var(--color-accent);
+}
+
+/* ============================================================================
+   SKILLS SECTION
+   ============================================================================ */
+
+/* --- Section wrapper and header --- */
+
+.skills {
+    padding: 120px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.skills__header {
+    margin-bottom: 32px;
+}
+
+.skills__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    margin: 0 0 12px;
+}
+
+.skills__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    color: var(--color-foreground);
+    line-height: 1.05;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+}
+
+.skills__subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .skills {
+        padding: 80px 16px;
+    }
+}
+
+/* --- Scratch card layout --- */
+
+.skills-scratch {
+    width: 100%;
+}
+
+.skills-scratch__layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .skills-scratch__layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+.skills-scratch__main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* --- Scratch card surface (the canvas and hidden grid underneath) --- */
+
+.skills-scratch__container {
+    position: relative;
+    width: 100%;
+    background: var(--color-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.skills-scratch__grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    padding: 6px;
+    gap: 4px;
+}
+
+.skills-scratch__cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4px 6px;
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    border-radius: 6px;
+    border: 1px solid;
+    background: var(--color-background);
+    line-height: 1.15;
+    overflow: hidden;
+    word-break: break-word;
+    hyphens: auto;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.skills-scratch__cell--core {
+    border-color: var(--color-accent);
+    color: var(--color-foreground);
+    background: color-mix(
+        in srgb,
+        var(--color-accent) 16%,
+        var(--color-background)
+    );
+    box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 28%, transparent);
+    font-weight: 500;
+}
+
+.skills-scratch__cell--strong {
+    border-color: color-mix(in srgb, var(--color-foreground) 35%, transparent);
+    color: var(--color-foreground);
+}
+
+.skills-scratch__cell--familiar {
+    border-color: var(--color-border);
+    color: var(--color-muted);
+}
+
+.skills-scratch__cell.is-found {
+    animation: scratchCellPulse 0.45s ease-out;
+}
+
+@keyframes scratchCellPulse {
+    0% {
+        transform: scale(0.88);
+        opacity: 0.5;
+    }
+    55% {
+        transform: scale(1.06);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.skills-scratch__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+    display: block;
+}
+
+/* --- Controls beneath the scratch card --- */
+
+.skills-scratch__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-wrap: wrap;
+}
+
+.skills-scratch__progress {
+    color: var(--color-muted);
+}
+
+.skills-scratch__progress strong {
+    color: var(--color-accent);
+    font-weight: 500;
+}
+
+.skills-scratch__reveal-all,
+.skills-scratch__reset {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-muted);
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.skills-scratch__reveal-all:hover,
+.skills-scratch__reveal-all:focus-visible,
+.skills-scratch__reset:hover,
+.skills-scratch__reset:focus-visible {
+    border-color: var(--color-foreground);
+    color: var(--color-foreground);
+    outline: none;
+}
+
+/* --- Discovered panel (right side; height matched to left via JS) --- */
+
+.skills-scratch__found {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px;
+    background: var(--color-subtle);
+    overflow-y: auto;
+    position: sticky;
+    top: 24px;
+}
+
+@media (max-width: 900px) {
+    .skills-scratch__found {
+        position: static;
+    }
+}
+
+.skills-scratch__found-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 400;
+}
+
+.skills-scratch__found-empty {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    margin: 0;
+    font-style: italic;
+    letter-spacing: 0.04em;
+}
+
+.skills-scratch__found-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.skills-scratch__found-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 10px;
+}
+
+.skills-scratch__found-category-count {
+    color: var(--color-accent);
+    font-weight: 500;
+}
+
+.skills-scratch__found-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.skills-scratch__found-chip {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    padding: 4px 9px;
+    border-radius: 5px;
+    border: 1px solid;
+    animation: scratchChipIn 0.4s ease-out;
+}
+
+.skills-scratch__found-chip--core {
+    border-color: var(--color-accent);
+    color: var(--color-foreground);
+    background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+    font-weight: 500;
+}
+
+.skills-scratch__found-chip--strong {
+    border-color: color-mix(in srgb, var(--color-foreground) 35%, transparent);
+    color: var(--color-foreground);
+}
+
+.skills-scratch__found-chip--familiar {
+    border-color: var(--color-border);
+    color: var(--color-muted);
+}
+
+@keyframes scratchChipIn {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
