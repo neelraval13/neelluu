@@ -297,3 +297,206 @@
 .experience-detail-card__project-link:hover {
     border-bottom-color: var(--color-accent);
 }
+
+/* Make the mobile HUD clickable - swap pointer-events, add affordance */
+.experience-rung-overlay--clickable {
+    pointer-events: auto;
+    cursor: pointer;
+    background: color-mix(in srgb, var(--color-background) 78%, transparent);
+    border: 1px solid var(--color-border);
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    appearance: none;
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.experience-rung-overlay--clickable:active {
+    transform: scale(0.98);
+    border-color: var(--color-accent);
+}
+
+.experience-rung-overlay__hint {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Bottom sheet for detail view */
+.experience-rung-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: sheetBackdropFadeIn 0.2s ease-out;
+}
+
+@keyframes sheetBackdropFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.experience-rung-sheet {
+    position: relative;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px 20px max(28px, env(safe-area-inset-bottom));
+    background: var(--color-background);
+    border-top: 1px solid var(--color-border);
+    border-radius: 20px 20px 0 0;
+    animation: sheetSlideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes sheetSlideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.experience-rung-sheet__handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+}
+
+.experience-rung-sheet__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: var(--color-muted);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition:
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+.experience-rung-sheet__close:hover,
+.experience-rung-sheet__close:focus-visible {
+    color: var(--color-foreground);
+    background: var(--color-subtle);
+}
+
+.experience-rung-sheet__date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+}
+
+.experience-rung-sheet__transition {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.experience-rung-sheet__role {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-foreground);
+    line-height: 1.3;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.experience-rung-sheet__section-header {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+    margin-bottom: 16px;
+}
+
+.experience-rung-sheet__projects {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.experience-rung-sheet__project-name {
+    font-size: 1rem;
+    color: var(--color-foreground);
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.experience-rung-sheet__project-description {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.experience-rung-sheet__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.experience-rung-sheet__stack-item {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    padding: 3px 8px;
+    background: var(--color-subtle);
+    border-radius: 4px;
+}
+
+.experience-rung-sheet__project-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    margin-top: 10px;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.experience-rung-sheet__project-link:hover,
+.experience-rung-sheet__project-link:focus-visible {
+    border-bottom-color: var(--color-accent);
+}
