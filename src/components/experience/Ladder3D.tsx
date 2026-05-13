@@ -55,7 +55,6 @@ function computeKnee(
   return midpoint;
 }
 
-// Determine which rung the figure is closest to at a given scroll progress
 function getActiveRungId(progress: number, totalRungs: number): number {
   const cycles = totalRungs;
   const cyclePos = progress * cycles;
@@ -217,22 +216,16 @@ function RungLabel({ rung }: { rung: Rung }) {
   const y = rungY(rung.id);
   return (
     <Html
-      position={[RAIL_X + 0.45, y, 0]}
+      position={[-RAIL_X - 0.9, y, 0]}
       center={false}
       style={{ pointerEvents: "none" }}
       transform={false}
       occlude={false}
     >
-      <div className="rung-label">
+      <div className="rung-label rung-label--left">
         <div className="rung-label__date">{rung.monthYear}</div>
         {rung.transitionLabel && (
           <div className="rung-label__transition">{rung.transitionLabel}</div>
-        )}
-        {rung.role && rung.company && (
-          <div className="rung-label__role">
-            {rung.role} <span className="rung-label__sep">·</span>{" "}
-            {rung.company}
-          </div>
         )}
       </div>
     </Html>
@@ -582,6 +575,68 @@ function CurrentRungOverlay({ progress }: { progress: number }) {
   );
 }
 
+function RungDetailCard({ progress }: { progress: number }) {
+  const activeRungId = getActiveRungId(progress, RUNGS.length);
+  const activeRung = RUNGS.find((r) => r.id === activeRungId);
+  if (!activeRung) return null;
+
+  return (
+    <div className="experience-detail-card" key={activeRung.id}>
+      <div className="experience-detail-card__date">{activeRung.monthYear}</div>
+      {activeRung.transitionLabel && (
+        <div className="experience-detail-card__transition">
+          {activeRung.transitionLabel}
+        </div>
+      )}
+      <div className="experience-detail-card__role">
+        {activeRung.role} <span aria-hidden="true">·</span> {activeRung.company}
+      </div>
+
+      {activeRung.projects && activeRung.projects.length > 0 && (
+        <>
+          <div className="experience-detail-card__section-header">
+            Working on
+          </div>
+          <ul className="experience-detail-card__projects">
+            {activeRung.projects.map((project, idx) => (
+              <li key={idx} className="experience-detail-card__project">
+                <div className="experience-detail-card__project-name">
+                  {project.name}
+                </div>
+                <div className="experience-detail-card__project-description">
+                  {project.description}
+                </div>
+                {project.stack && project.stack.length > 0 && (
+                  <div className="experience-detail-card__stack">
+                    {project.stack.map((s) => (
+                      <span
+                        key={s}
+                        className="experience-detail-card__stack-item"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="experience-detail-card__project-link"
+                  >
+                    View ↗
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
 function ReducedMotionList() {
   const sortedRungs = [...RUNGS].sort((a, b) => b.id - a.id);
   return (
@@ -674,6 +729,7 @@ export default function Ladder3D() {
         />
       </Canvas>
       {isMobile && <CurrentRungOverlay progress={progress} />}
+      {!isMobile && <RungDetailCard progress={progress} />}
     </div>
   );
 }

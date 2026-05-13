@@ -163,3 +163,137 @@
         overflow: visible !important;
     }
 }
+
+/* Left-positioned rung labels (anchored on right edge, text reaches toward ladder) */
+.rung-label--left {
+    text-align: right;
+    transform: translateX(-100%);
+    width: 14ch;
+    padding-right: 24px;
+    line-height: 1.4;
+}
+
+.rung-label--left .rung-label__date,
+.rung-label--left .rung-label__transition {
+    white-space: normal;
+    word-break: keep-all;
+}
+
+/* Desktop detail card - right side of viewport, updates with active rung */
+.experience-detail-card {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    width: min(32vw, 360px); /* was 34vw, 400px - slightly tighter */
+    padding: 22px 24px;
+    background: color-mix(in srgb, var(--color-background) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    z-index: 10;
+    pointer-events: auto;
+    animation: detailCardFadeIn 0.3s ease-out;
+}
+
+@keyframes detailCardFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(4px, -50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+}
+
+.experience-detail-card__date {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+}
+
+.experience-detail-card__transition {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.experience-detail-card__role {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--color-foreground);
+    line-height: 1.35;
+    margin-top: 10px;
+    margin-bottom: 18px;
+}
+
+.experience-detail-card__section-header {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+    margin-bottom: 14px;
+}
+
+.experience-detail-card__projects {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.experience-detail-card__project-name {
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.experience-detail-card__project-description {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.experience-detail-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.experience-detail-card__stack-item {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-muted);
+    padding: 2px 7px;
+    background: var(--color-subtle);
+    border-radius: 4px;
+}
+
+.experience-detail-card__project-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-accent);
+    margin-top: 8px;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.experience-detail-card__project-link:hover {
+    border-bottom-color: var(--color-accent);
+}
