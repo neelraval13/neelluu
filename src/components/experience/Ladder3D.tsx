@@ -55,7 +55,6 @@ function computeKnee(
   return midpoint;
 }
 
-// Determine which rung the figure is closest to at a given scroll progress
 function getActiveRungId(progress: number, totalRungs: number): number {
   const cycles = totalRungs;
   const cyclePos = progress * cycles;
@@ -217,22 +216,16 @@ function RungLabel({ rung }: { rung: Rung }) {
   const y = rungY(rung.id);
   return (
     <Html
-      position={[RAIL_X + 0.45, y, 0]}
+      position={[-RAIL_X - 0.9, y, 0]}
       center={false}
       style={{ pointerEvents: "none" }}
       transform={false}
       occlude={false}
     >
-      <div className="rung-label">
+      <div className="rung-label rung-label--left">
         <div className="rung-label__date">{rung.monthYear}</div>
         {rung.transitionLabel && (
           <div className="rung-label__transition">{rung.transitionLabel}</div>
-        )}
-        {rung.role && rung.company && (
-          <div className="rung-label__role">
-            {rung.role} <span className="rung-label__sep">·</span>{" "}
-            {rung.company}
-          </div>
         )}
       </div>
     </Html>
@@ -558,25 +551,203 @@ function AnimatedScene({
 }
 
 function CurrentRungOverlay({ progress }: { progress: number }) {
+  const [showSheet, setShowSheet] = useState(false);
   const activeRungId = getActiveRungId(progress, RUNGS.length);
   const activeRung = RUNGS.find((r) => r.id === activeRungId);
   if (!activeRung) return null;
 
   return (
-    <div className="experience-rung-overlay" key={activeRung.id}>
-      <div className="experience-rung-overlay__date">
-        {activeRung.monthYear}
+    <>
+      <button
+        type="button"
+        className="experience-rung-overlay experience-rung-overlay--clickable"
+        key={activeRung.id}
+        onClick={() => setShowSheet(true)}
+        aria-label="View role details and projects"
+      >
+        <div className="experience-rung-overlay__date">
+          {activeRung.monthYear}
+        </div>
+        {activeRung.transitionLabel && (
+          <div className="experience-rung-overlay__transition">
+            {activeRung.transitionLabel}
+          </div>
+        )}
+        {activeRung.role && activeRung.company && (
+          <div className="experience-rung-overlay__role">
+            {activeRung.role} <span aria-hidden="true">·</span>{" "}
+            {activeRung.company}
+          </div>
+        )}
+        <div className="experience-rung-overlay__hint">
+          Tap for projects <span aria-hidden="true">↗</span>
+        </div>
+      </button>
+
+      {showSheet && (
+        <RungDetailSheet
+          rung={activeRung}
+          onClose={() => setShowSheet(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function RungDetailSheet({
+  rung,
+  onClose,
+}: {
+  rung: Rung;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleEsc);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="experience-rung-sheet-backdrop"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="experience-rung-sheet"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="experience-rung-sheet__handle" aria-hidden="true" />
+        <button
+          type="button"
+          className="experience-rung-sheet__close"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          ×
+        </button>
+
+        <div className="experience-rung-sheet__date">{rung.monthYear}</div>
+        {rung.transitionLabel && (
+          <div className="experience-rung-sheet__transition">
+            {rung.transitionLabel}
+          </div>
+        )}
+        <div className="experience-rung-sheet__role">
+          {rung.role} <span aria-hidden="true">·</span> {rung.company}
+        </div>
+
+        {rung.projects && rung.projects.length > 0 && (
+          <>
+            <div className="experience-rung-sheet__section-header">
+              Working on
+            </div>
+            <ul className="experience-rung-sheet__projects">
+              {rung.projects.map((project, idx) => (
+                <li key={idx} className="experience-rung-sheet__project">
+                  <div className="experience-rung-sheet__project-name">
+                    {project.name}
+                  </div>
+                  <div className="experience-rung-sheet__project-description">
+                    {project.description}
+                  </div>
+                  {project.stack && project.stack.length > 0 && (
+                    <div className="experience-rung-sheet__stack">
+                      {project.stack.map((s) => (
+                        <span
+                          key={s}
+                          className="experience-rung-sheet__stack-item"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {project.link && (
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="experience-rung-sheet__project-link"
+                    >
+                      View <span aria-hidden="true">↗</span>
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
+    </div>
+  );
+}
+
+function RungDetailCard({ progress }: { progress: number }) {
+  const activeRungId = getActiveRungId(progress, RUNGS.length);
+  const activeRung = RUNGS.find((r) => r.id === activeRungId);
+  if (!activeRung) return null;
+
+  return (
+    <div className="experience-detail-card" key={activeRung.id}>
+      <div className="experience-detail-card__date">{activeRung.monthYear}</div>
       {activeRung.transitionLabel && (
-        <div className="experience-rung-overlay__transition">
+        <div className="experience-detail-card__transition">
           {activeRung.transitionLabel}
         </div>
       )}
-      {activeRung.role && activeRung.company && (
-        <div className="experience-rung-overlay__role">
-          {activeRung.role} <span aria-hidden="true">·</span>{" "}
-          {activeRung.company}
-        </div>
+      <div className="experience-detail-card__role">
+        {activeRung.role} <span aria-hidden="true">·</span> {activeRung.company}
+      </div>
+
+      {activeRung.projects && activeRung.projects.length > 0 && (
+        <>
+          <div className="experience-detail-card__section-header">
+            Working on
+          </div>
+          <ul className="experience-detail-card__projects">
+            {activeRung.projects.map((project, idx) => (
+              <li key={idx} className="experience-detail-card__project">
+                <div className="experience-detail-card__project-name">
+                  {project.name}
+                </div>
+                <div className="experience-detail-card__project-description">
+                  {project.description}
+                </div>
+                {project.stack && project.stack.length > 0 && (
+                  <div className="experience-detail-card__stack">
+                    {project.stack.map((s) => (
+                      <span
+                        key={s}
+                        className="experience-detail-card__stack-item"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="experience-detail-card__project-link"
+                  >
+                    View ↗
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );
@@ -674,6 +845,7 @@ export default function Ladder3D() {
         />
       </Canvas>
       {isMobile && <CurrentRungOverlay progress={progress} />}
+      {!isMobile && <RungDetailCard progress={progress} />}
     </div>
   );
 }
