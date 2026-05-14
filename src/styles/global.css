@@ -1116,3 +1116,155 @@
         padding: 24px;
     }
 }
+
+/* ============================================================================
+   OTHER EXPERIENCES SECTION
+   ============================================================================ */
+
+.other-experiences {
+    padding: 120px 24px;
+    max-width: 880px;
+    margin: 0 auto;
+}
+
+.other-experiences__header {
+    margin-bottom: 56px;
+}
+
+.other-experiences__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    margin: 0 0 12px;
+}
+
+.other-experiences__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    color: var(--color-foreground);
+    line-height: 1.3;
+    margin: 0;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+    max-width: 32ch;
+}
+
+.other-experiences__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.other-role {
+    padding: 36px 0;
+    border-top: 1px solid var(--color-border);
+}
+
+.other-role:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.other-role:last-child {
+    padding-bottom: 0;
+}
+
+.other-role__heading {
+    margin-bottom: 14px;
+}
+
+.other-role__title {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    color: var(--color-foreground);
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+}
+
+.other-role__meta {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.other-role__dates {
+    color: var(--color-muted);
+}
+
+.other-role__progression {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px;
+}
+
+.other-role__progression-step {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    padding: 4px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.other-role__progression-step:last-of-type {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.other-role__progression-arrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-muted);
+}
+
+.other-role__bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.other-role__bullet {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    line-height: 1.6;
+    padding-left: 18px;
+    position: relative;
+}
+
+.other-role__bullet::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent);
+}
+
+@media (max-width: 640px) {
+    .other-experiences {
+        padding: 80px 16px;
+    }
+    .other-experiences__header {
+        margin-bottom: 40px;
+    }
+    .other-role {
+        padding: 28px 0;
+    }
+}
