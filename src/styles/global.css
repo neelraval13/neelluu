@@ -23,6 +23,7 @@
     --font-display: "Newsreader Variable", "Newsreader", Georgia, serif;
     --font-sans: "Geist Variable", "Geist", system-ui, sans-serif;
     --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, monospace;
+    --font-script: "Srisakdi", "Newsreader Variable", Georgia, serif;
 
     /* Display headline - scales from 2.25rem on narrow phones to 6.5rem on large displays */
     --text-display: clamp(2.25rem, 9vw, 6.5rem);
@@ -1327,14 +1328,16 @@
 }
 
 .site-header__brand {
-    font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-family: var(--font-script);
+    font-size: 1.5rem;
+    font-weight: 700;
     color: var(--color-foreground);
     text-decoration: none;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
     white-space: nowrap;
     flex-shrink: 0;
     transition: color 0.2s ease;
+    line-height: 1;
 }
 
 .site-header__brand:hover,
