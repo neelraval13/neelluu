@@ -61,6 +61,8 @@ function buildCells(cols: number, allSkills: RawSkill[]): ScratchCell[] {
 export default function SkillsScratch() {
   const [isMobile, setIsMobile] = useState(false);
   const [foundIds, setFoundIds] = useState<Set<string>>(new Set());
+  const [isStacked, setIsStacked] = useState(false);
+  const [matchedHeight, setMatchedHeight] = useState<number | null>(null);
 
   const allSkills = useMemo(() => flattenSkills(), []);
   const cols = isMobile ? 4 : 8;
@@ -69,13 +71,10 @@ export default function SkillsScratch() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
   const isDrawing = useRef(false);
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
   const foundIdsRef = useRef(foundIds);
-
-  const mainRef = useRef<HTMLDivElement>(null);
-  const [matchedHeight, setMatchedHeight] = useState<number | null>(null);
-  const [isStacked, setIsStacked] = useState(false);
 
   useEffect(() => {
     foundIdsRef.current = foundIds;
@@ -116,7 +115,6 @@ export default function SkillsScratch() {
       ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, w, h);
 
-      // Base magenta gradient
       const grad = ctx.createLinearGradient(0, 0, w, h);
       grad.addColorStop(0, "#ff3d9a");
       grad.addColorStop(0.5, "#e8348a");
@@ -124,7 +122,6 @@ export default function SkillsScratch() {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
-      // Grain
       for (let i = 0; i < 1800; i++) {
         const x = Math.random() * w;
         const y = Math.random() * h;
@@ -133,7 +130,6 @@ export default function SkillsScratch() {
         ctx.fillRect(x, y, Math.random() * 1.5, Math.random() * 1.5);
       }
 
-      // Sparkle highlights
       for (let i = 0; i < 70; i++) {
         const x = Math.random() * w;
         const y = Math.random() * h;
@@ -141,7 +137,6 @@ export default function SkillsScratch() {
         ctx.fillRect(x, y, 1.5, 1.5);
       }
 
-      // Hint text
       const bigFont = w > 600 ? 28 : 20;
       ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
       ctx.font = `bold ${bigFont}px ui-monospace, "Geist Mono", monospace`;
@@ -157,7 +152,6 @@ export default function SkillsScratch() {
     [],
   );
 
-  // Initialize canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -266,52 +260,77 @@ export default function SkillsScratch() {
     [checkCells],
   );
 
-  const getEventPos = (
-    e: MouseEvent | TouchEvent,
-  ): { x: number; y: number } | null => {
+  // Native event listeners on the canvas - bypasses React's passive-by-default
+  // touch handling so preventDefault works correctly on iOS Safari.
+  useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return null;
-    const rect = canvas.getBoundingClientRect();
-    let clientX: number;
-    let clientY: number;
+    if (!canvas) return;
 
-    if ("touches" in e && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else if ("clientX" in e) {
-      clientX = (e as MouseEvent).clientX;
-      clientY = (e as MouseEvent).clientY;
-    } else {
-      return null;
-    }
+    const getEventPos = (
+      e: TouchEvent | MouseEvent,
+    ): { x: number; y: number } | null => {
+      const rect = canvas.getBoundingClientRect();
+      if ("touches" in e) {
+        if (e.touches.length === 0) return null;
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top,
+        };
+      }
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    };
 
-    return { x: clientX - rect.left, y: clientY - rect.top };
-  };
+    const handleStart = (e: TouchEvent | MouseEvent) => {
+      if ("touches" in e) e.preventDefault();
+      isDrawing.current = true;
+      const pos = getEventPos(e);
+      if (pos) {
+        lastPoint.current = pos;
+        scratchPath(pos.x, pos.y, pos.x + 0.01, pos.y);
+      }
+    };
 
-  const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
-    isDrawing.current = true;
-    const pos = getEventPos(e.nativeEvent);
-    if (pos) {
-      lastPoint.current = pos;
-      scratchPath(pos.x, pos.y, pos.x + 0.01, pos.y);
-    }
-    if ("touches" in e.nativeEvent) e.preventDefault();
-  };
+    const handleMove = (e: TouchEvent | MouseEvent) => {
+      if (!isDrawing.current) return;
+      if ("touches" in e) e.preventDefault();
+      const pos = getEventPos(e);
+      if (pos && lastPoint.current) {
+        scratchPath(lastPoint.current.x, lastPoint.current.y, pos.x, pos.y);
+        lastPoint.current = pos;
+      }
+    };
 
-  const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing.current) return;
-    const pos = getEventPos(e.nativeEvent);
-    if (pos && lastPoint.current) {
-      scratchPath(lastPoint.current.x, lastPoint.current.y, pos.x, pos.y);
-      lastPoint.current = pos;
-    }
-    if ("touches" in e.nativeEvent) e.preventDefault();
-  };
+    const handleEnd = () => {
+      isDrawing.current = false;
+      lastPoint.current = null;
+    };
 
-  const handleEnd = () => {
-    isDrawing.current = false;
-    lastPoint.current = null;
-  };
+    canvas.addEventListener("mousedown", handleStart);
+    canvas.addEventListener("mousemove", handleMove);
+    canvas.addEventListener("mouseup", handleEnd);
+    canvas.addEventListener("mouseleave", handleEnd);
+
+    // Touch events: passive: false is the key change. Without it, iOS Safari
+    // ignores preventDefault and the canvas drawing pipeline doesn't execute.
+    canvas.addEventListener("touchstart", handleStart, { passive: false });
+    canvas.addEventListener("touchmove", handleMove, { passive: false });
+    canvas.addEventListener("touchend", handleEnd);
+    canvas.addEventListener("touchcancel", handleEnd);
+
+    return () => {
+      canvas.removeEventListener("mousedown", handleStart);
+      canvas.removeEventListener("mousemove", handleMove);
+      canvas.removeEventListener("mouseup", handleEnd);
+      canvas.removeEventListener("mouseleave", handleEnd);
+      canvas.removeEventListener("touchstart", handleStart);
+      canvas.removeEventListener("touchmove", handleMove);
+      canvas.removeEventListener("touchend", handleEnd);
+      canvas.removeEventListener("touchcancel", handleEnd);
+    };
+  }, [scratchPath]);
 
   const handleRevealAll = () => {
     const canvas = canvasRef.current;
@@ -364,7 +383,9 @@ export default function SkillsScratch() {
           <div
             className="skills-scratch__container"
             ref={containerRef}
-            style={{ aspectRatio: isMobile ? "2 / 5" : "5 / 4" }}
+            style={{
+              aspectRatio: isMobile ? "2 / 5" : "5 / 4",
+            }}
           >
             <div
               className="skills-scratch__grid"
@@ -384,18 +405,7 @@ export default function SkillsScratch() {
                 </div>
               ))}
             </div>
-            <canvas
-              ref={canvasRef}
-              className="skills-scratch__canvas"
-              onMouseDown={handleStart}
-              onMouseMove={handleMove}
-              onMouseUp={handleEnd}
-              onMouseLeave={handleEnd}
-              onTouchStart={handleStart}
-              onTouchMove={handleMove}
-              onTouchEnd={handleEnd}
-              onTouchCancel={handleEnd}
-            />
+            <canvas ref={canvasRef} className="skills-scratch__canvas" />
           </div>
 
           <div className="skills-scratch__controls">
