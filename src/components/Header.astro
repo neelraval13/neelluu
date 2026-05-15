@@ -1,0 +1,95 @@
+---
+const links = [
+    { label: "About", href: "#about" },
+    { label: "Experience", href: "#experience" },
+    { label: "Earlier", href: "#earlier" },
+    { label: "Projects", href: "#projects" },
+    { label: "Skills", href: "#skills" },
+];
+---
+
+<header class="site-header" data-site-header>
+    <nav class="site-header__nav" aria-label="Primary">
+        <a class="site-header__brand" href="#about" data-nav-link="about">
+            Neel Raval
+        </a>
+        <div class="site-header__links">
+            {
+                links.map((link) => (
+                    <a
+                        class="site-header__link"
+                        href={link.href}
+                        data-nav-link={link.href.slice(1)}
+                    >
+                        {link.label}
+                    </a>
+                ))
+            }
+        </div>
+    </nav>
+</header>
+
+<script>
+    // Scroll-spy: highlight the nav link for whichever section is in view
+    const sections = ["about", "experience", "earlier", "projects", "skills"];
+    const navLinks = new Map<string, HTMLElement>();
+
+    document.querySelectorAll<HTMLElement>("[data-nav-link]").forEach((el) => {
+        const id = el.dataset.navLink;
+        if (id) navLinks.set(id, el);
+    });
+
+    const setActive = (id: string) => {
+        navLinks.forEach((el, key) => {
+            el.classList.toggle("is-active", key === id);
+        });
+    };
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            // Pick the entry most in view
+            const visible = entries
+                .filter((e) => e.isIntersecting)
+                .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+            if (visible.length > 0) {
+                setActive(visible[0].target.id);
+            }
+        },
+        {
+            // Trigger when a section occupies the middle band of the viewport
+            rootMargin: "-40% 0px -40% 0px",
+            threshold: [0, 0.25, 0.5, 0.75, 1],
+        },
+    );
+
+    sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+    });
+
+    // Keep the active link scrolled into view within the mobile strip
+    const linksContainer = document.querySelector<HTMLElement>(
+        ".site-header__links",
+    );
+    const scrollActiveIntoView = () => {
+        const active = linksContainer?.querySelector<HTMLElement>(".is-active");
+        if (active && linksContainer) {
+            active.scrollIntoView({
+                inline: "center",
+                block: "nearest",
+                behavior: "smooth",
+            });
+        }
+    };
+    const mqMobile = window.matchMedia("(max-width: 720px)");
+    const observerForScroll = new MutationObserver(() => {
+        if (mqMobile.matches) scrollActiveIntoView();
+    });
+    if (linksContainer) {
+        observerForScroll.observe(linksContainer, {
+            attributes: true,
+            subtree: true,
+            attributeFilter: ["class"],
+        });
+    }
+</script>
