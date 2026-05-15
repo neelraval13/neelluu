@@ -1,0 +1,208 @@
+---
+interface Project {
+    name: string;
+    hook: string;
+    description: string;
+    stack: string[];
+    links: { label: string; href: string }[];
+    featured?: boolean;
+}
+
+const featured: Project = {
+    name: "FLEXIUS",
+    hook: "An AI-coached fitness PWA that turns workout tracking into a conversation.",
+    description:
+        'I wanted workout logging to feel like talking to a coach, not filling out a form. You speak or type - "did 3 sets of bench at 65kg", "plan a push day" - and the model decides whether to log a set, pull your history, generate a structured plan, or just answer a fitness question. It\'s offline-first, so it keeps logging through dead gym wifi via an IndexedDB queue and replays when you reconnect. The piece I\'m proudest of is the provider-neutral LLM layer - Gemini, Claude, and OpenAI all run behind one interface, with bring-your-own-key support.',
+    stack: [
+        "Next.js 16",
+        "React 19",
+        "Turso (LibSQL)",
+        "Drizzle ORM",
+        "Tailwind 4",
+        "shadcn/ui",
+        "Web Push",
+        "Vercel",
+    ],
+    links: [
+        { label: "Live", href: "https://flexius.neelluu.com" },
+        { label: "GitHub", href: "https://github.com/neelraval13/FLEXIUS" },
+    ],
+    featured: true,
+};
+
+const projects: Project[] = [
+    {
+        name: "Jogen",
+        hook: "Honest resume tailoring advice - line edits and skill-gap flags, never fabrication.",
+        description:
+            "Most resume tools optimize for \"rewrite this for me.\" I built Jogen to do the opposite - it's an advisor, not a ghostwriter. Upload a resume and a job description and you get a fit score, verbatim line edits you can paste anywhere, and skill gaps each paired with a concrete first step. It never invents experience, and a Pydantic contract gate rejects any model response that doesn't meet the schema.",
+        stack: [
+            "React 19",
+            "TypeScript",
+            "Vite",
+            "FastAPI",
+            "Pydantic",
+            "Anthropic SDK",
+            "SSE",
+            "Render",
+        ],
+        links: [
+            { label: "Live", href: "https://jogen.neelluu.com" },
+            {
+                label: "GitHub",
+                href: "https://github.com/neelraval13/Resume-Advisor",
+            },
+        ],
+    },
+    {
+        name: "Instagram Reel Analyzer",
+        hook: "A production-shaped vision-LLM API for analyzing Instagram reels.",
+        description:
+            "Started as a quick hack - share a reel from iOS, get a structured analysis back - and grew into a proper multi-tenant service. Provider-abstracted vision inference runs against Gemini or a local Qwen2.5-VL, with Redis-backed API keys hashed at rest, two-window rate limiting, and a schema-versioned cache. Structured outputs are enforced at decode time via Pydantic, not parsed after the fact.",
+        stack: [
+            "Python 3.13",
+            "FastAPI",
+            "Pydantic v2",
+            "Redis",
+            "yt-dlp",
+            "Tenacity",
+            "structlog",
+            "Docker",
+        ],
+        links: [
+            {
+                label: "GitHub",
+                href: "https://github.com/neelraval13/instagram-reel-analyzer",
+            },
+        ],
+    },
+    {
+        name: "Sanjeevani",
+        hook: "Offline clinical decision support for rural primary health centers.",
+        description:
+            "A doctor enters a patient presentation and an optional photo, and six chained LLM calls work through feature extraction, differentials, triage, investigations, referral, and an action plan - ending in a patient summary in their own language. It runs fully offline on Gemma 4 via Ollama, so no patient data leaves the device, and investigations are bounded to what a real PHC can actually do.",
+        stack: [
+            "Python",
+            "Gemma 4 (Ollama)",
+            "FastAPI",
+            "Gradio",
+            "SSE",
+            "Pydantic",
+        ],
+        links: [
+            {
+                label: "GitHub",
+                href: "https://github.com/neelraval13/Sanjeevani",
+            },
+        ],
+    },
+    {
+        name: "SOC Analyst",
+        hook: "An RL-style environment for training and evaluating LLM agents on security operations work.",
+        description:
+            "A stateful simulator of three SOC analyst tasks of increasing difficulty - triage, investigation, and correlating a ten-alert coordinated attack campaign out of a noise floor. Agents interact over HTTP with structured actions, scored by task-specific graders plus dense reward shaping with the asymmetric penalties a real SOC operates under. Built on Meta's OpenEnv framework.",
+        stack: [
+            "Python",
+            "FastAPI",
+            "Pydantic",
+            "OpenEnv",
+            "Docker",
+            "HF Spaces",
+        ],
+        links: [
+            {
+                label: "GitHub",
+                href: "https://github.com/neelraval13/SOC-Analyst",
+            },
+            {
+                label: "HF Space",
+                href: "https://huggingface.co/spaces/neel-raval/soc-analyst-env",
+            },
+        ],
+    },
+];
+---
+
+<section class="projects" id="projects">
+    <header class="projects__header">
+        <p class="projects__eyebrow">Projects</p>
+        <h2 class="projects__title">
+            Things I built because I wanted them to exist.
+        </h2>
+    </header>
+
+    <article class="project-featured">
+        <div class="project-featured__body">
+            <div class="project-featured__heading">
+                <h3 class="project-featured__name">{featured.name}</h3>
+                <span class="project-featured__badge">Flagship</span>
+            </div>
+            <p class="project-featured__hook">{featured.hook}</p>
+            <p class="project-featured__description">{featured.description}</p>
+            <ul class="project__stack">
+                {
+                    featured.stack.map((tech) => (
+                        <li class="project__stack-item">{tech}</li>
+                    ))
+                }
+            </ul>
+            <div class="project__links">
+                {
+                    featured.links.map((link) => (
+                        <a
+                            class="project__link"
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {link.label} <span aria-hidden="true">↗</span>
+                        </a>
+                    ))
+                }
+            </div>
+        </div>
+        <div class="project-featured__visual">
+            <img
+                class="project-featured__logo"
+                src="/flexius-icon.png"
+                alt="FLEXIUS"
+            />
+        </div>
+    </article>
+
+    <div class="projects__grid">
+        {
+            projects.map((project) => (
+                <article class="project-card">
+                    <div class="project-card__top">
+                        <h3 class="project-card__name">{project.name}</h3>
+                        <p class="project-card__hook">{project.hook}</p>
+                        <p class="project-card__description">
+                            {project.description}
+                        </p>
+                    </div>
+                    <div class="project-card__bottom">
+                        <ul class="project__stack">
+                            {project.stack.map((tech) => (
+                                <li class="project__stack-item">{tech}</li>
+                            ))}
+                        </ul>
+                        <div class="project__links">
+                            {project.links.map((link) => (
+                                <a
+                                    class="project__link"
+                                    href={link.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {link.label}{" "}
+                                    <span aria-hidden="true">↗</span>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </article>
+            ))
+        }
+    </div>
+</section>

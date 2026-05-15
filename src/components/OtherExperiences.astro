@@ -1,29 +1,106 @@
 ---
+interface Role {
+    company: string;
+    location: string;
+    title: string;
+    dates: string;
+    progression?: string[];
+    bullets: string[];
+}
 
+const roles: Role[] = [
+    {
+        company: "Viral Fission",
+        location: "Remote",
+        title: "Assistant Zonal Head, South",
+        dates: "Jan 2021 – Apr 2023",
+        progression: [
+            "Ambassador",
+            "Team Lead",
+            "City Lead",
+            "Student Manager",
+            "Assistant Zonal Head",
+        ],
+        bullets: [
+            "Worked with ~20 brands across tech, FMCG, streaming and services on brand amplification, sampling surveys, and content creation, hitting 90% brand satisfaction.",
+            "Coordinated a network of 6000+ ambassadors and ran 20+ offline events to drive brand engagement.",
+        ],
+    },
+    {
+        company: "Bizco",
+        location: "Remote",
+        title: "MERN Stack Intern",
+        dates: "Jul 2022 – Sep 2022",
+        bullets: [
+            "Built an e-commerce Kirana marketplace on the MERN stack to bring neighborhood retail online.",
+            "Implemented offline-first payments (Paystack) and offline data sync (IBM Cloudant + PouchDB) for reliable use under intermittent connectivity.",
+            "Shipped REST API and frontend with CI/CD on Heroku and Netlify.",
+        ],
+    },
+    {
+        company: "Voltfraction",
+        location: "Remote",
+        title: "Junior Developer",
+        dates: "Oct 2020 – Jan 2021",
+        bullets: [
+            "Built an internal CRM to streamline company operations, with a Django backend and SQL data layer.",
+        ],
+    },
+];
 ---
 
-<section
-    id="other-experiences"
-    aria-labelledby="other-experiences-heading"
-    class="min-h-dvh px-5 sm:px-6 md:px-10 pt-20 sm:pt-24 md:pt-32 pb-16 md:pb-24 flex items-center"
->
-    <div class="w-full max-w-6xl mx-auto">
-        <header class="mb-12 sm:mb-16">
-            <p
-                class="font-mono text-xs sm:text-[13px] uppercase tracking-[0.14em] text-accent mb-4 sm:mb-6"
-            >
-                Other experiences
-            </p>
-            <h2
-                id="other-experiences-heading"
-                class="font-display text-display text-foreground m-0 max-w-[16ch]"
-            >
-                And before that.
-            </h2>
-        </header>
+<section class="other-experiences" id="earlier">
+    <header class="other-experiences__header">
+        <p class="other-experiences__eyebrow">Earlier</p>
+        <h2 class="other-experiences__title">
+            Before engineering was the whole job - dev roles, and the brand-side
+            work that taught me how products actually reach people.
+        </h2>
+    </header>
 
-        <p class="font-sans text-base text-muted max-w-[60ch]">
-            Internships and earlier work. Content coming.
-        </p>
-    </div>
+    <ol class="other-experiences__list">
+        {
+            roles.map((role) => (
+                <li class="other-role">
+                    <div class="other-role__heading">
+                        <h3 class="other-role__title">{role.title}</h3>
+                        <p class="other-role__meta">
+                            {role.company} <span aria-hidden="true">·</span>{" "}
+                            {role.location} <span aria-hidden="true">·</span>{" "}
+                            <span class="other-role__dates">{role.dates}</span>
+                        </p>
+                    </div>
+
+                    {role.progression && (
+                        <p
+                            class="other-role__progression"
+                            aria-label="Role progression"
+                        >
+                            {role.progression.map((step, i) => (
+                                <>
+                                    <span class="other-role__progression-step">
+                                        {step}
+                                    </span>
+                                    {i < role.progression!.length - 1 && (
+                                        <span
+                                            class="other-role__progression-arrow"
+                                            aria-hidden="true"
+                                        >
+                                            →
+                                        </span>
+                                    )}
+                                </>
+                            ))}
+                        </p>
+                    )}
+
+                    <ul class="other-role__bullets">
+                        {role.bullets.map((bullet) => (
+                            <li class="other-role__bullet">{bullet}</li>
+                        ))}
+                    </ul>
+                </li>
+            ))
+        }
+    </ol>
 </section>
